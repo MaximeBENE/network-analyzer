@@ -59,7 +59,9 @@ Ce projet **implémente ces briques** en Python, sans dépendre d'un SIEM lourd,
 🚨 CRITIQUE - SCAN DE PORTS (interne) depuis 192.168.149.129 - 1000 ports distincts
 
 ============================================================
+
 📊 RAPPORT D'ANALYSE RÉSEAU
+
 ============================================================
 
 ⏱️ Durée: 0.09 secondes

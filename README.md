@@ -1,0 +1,148 @@
+# 🛡️ Network Packet Analyzer — SOC N1 Tool
+
+![Python](https://img.shields.io/badge/Python-3.12+-blue?logo=python)
+![Scapy](https://img.shields.io/badge/Scapy-2.5+-green)
+![License](https://img.shields.io/badge/license-MIT-lightgrey)
+![Status](https://img.shields.io/badge/status-active-success)
+
+Outil d'analyse de trafic réseau développé en Python, conçu comme un **mini-IDS** (Intrusion Detection System) pour un usage **SOC Niveau 1**.
+
+Il capture, analyse et détecte automatiquement des comportements suspects dans un fichier `.pcap`/`.pcapng` ou en temps réel sur une interface réseau.
+
+---
+
+## 🎯 Objectif du projet
+
+Dans un SOC N1, l'analyste doit être capable de :
+
+- Lire un flux réseau et en extraire les informations clés
+- Détecter les scans de ports, brute-force, floods
+- Prioriser les alertes selon le contexte (interne/externe, sévérité)
+- Produire un rapport exploitable (JSON, logs, dashboard)
+
+Ce projet **implémente ces briques** en Python, sans dépendre d'un SIEM lourd, pour démontrer la maîtrise des fondamentaux réseau et sécurité.
+
+---
+
+## 🛠️ Stack technique
+
+| Composant | Rôle |
+|:---|:---|
+| **Python 3.12+** | Langage principal |
+| **Scapy** | Capture et dissection des paquets |
+| **Colorama** | Interface terminal colorée |
+
+---
+
+## ⚙️ Fonctionnalités
+
+### Analyse
+- Lecture de fichiers `.pcap` et `.pcapng`
+- Capture live sur une interface réseau (Linux, nécessite `libpcap`)
+- Extraction : IP source/dest, ports, protocole, flags TCP, taille, payload
+
+### Détection
+- 🚨 **Scan de ports** : plus de 20 ports distincts depuis une même IP
+  - Sévérité graduée (MOYEN / ÉLEVÉ / CRITIQUE)
+  - Distinction **interne** (RFC1918) vs **externe**
+- 🔒 **Brute-force** : plus de 20 SYN sur un port sensible (SSH, RDP, MySQL…)
+- 🛡️ **Whitelist** : exclusion des ports à fort trafic légitime (DNS, HTTP, NTP)
+- 📊 **Rapport structuré** : résumé terminal + export JSON
+
+---
+
+## 📊 Exemple de sortie
+
+📂 Lecture du fichier captures\test.pcapng...
+
+🔍 Exécution des analyses de sécurité...
+🚨 CRITIQUE - SCAN DE PORTS (interne) depuis 192.168.149.129 - 1000 ports distincts
+
+============================================================
+📊 RAPPORT D'ANALYSE RÉSEAU
+============================================================
+
+⏱️ Durée: 0.09 secondes
+📦 Paquets capturés: 2140
+
+📈 Répartition des protocoles:
+TCP: 2058 (96.2%) ███████████████████
+UDP: 68 (3.2%)
+Other: 14 (0.7%)
+
+🌐 Top 5 IPs les plus actives:
+192.168.149.130 → 1107 paquets
+192.168.149.129 → 1003 paquets
+
+🔌 Top 5 ports les plus sollicités:
+Port 53 (DNS) → 59 connexions
+...
+
+⚠️ ÉVÉNEMENTS SUSPECTS DÉTECTÉS:
+• 🚨 CRITIQUE - SCAN DE PORTS (interne) depuis 192.168.149.129 - 1000 ports distincts
+
+
+Le rapport est également exporté en JSON (`capture_report.json`) pour intégration dans un SIEM.
+
+---
+
+## 🚀 Installation
+
+### 1. Cloner le projet
+
+```bash
+git clone https://github.com/MaximeBENE/network-analyzer.git
+cd network-analyzer
+
+# Linux / Mac / WSL
+python3 -m venv venv
+source venv/bin/activate
+
+# Windows PowerShell
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+
+python -m pip install --upgrade pip setuptools wheel
+python -m pip install -r requirements.txt
+💡 Windows : pour la capture live, installer Npcap en cochant "WinPcap API-compatible Mode". Pour l'analyse de fichiers .pcap, Npcap n'est pas nécessaire.
+
+📖 Utilisation
+Analyser un fichier .pcap / .pcapng
+
+python main.py --file captures/test.pcapng
+
+# Nécessite sudo pour accéder à l'interface
+sudo python main.py --live --interface eth0 --count 100
+
+🧪 Scénarios de test
+Scénario	Résultat attendu
+Ping entre VMs	Rapport ICMP, aucune alerte
+nmap -p 1-1000 depuis Kali	🚨 Scan détecté (CRITIQUE)
+hydra SSH depuis Kali	🔒 Brute-force détecté
+Navigation web normale	TCP/443 majoritaire, aucune alerte
+🗺️ Roadmap
+□ Détection d'ARP spoofing
+□ Détection d'ICMP flood / Ping of Death
+□ Export vers format Wazuh / Elasticsearch
+□ Dashboard web (Flask + Chart.js)
+□ Tests unitaires (pytest)
+□ Support IPv6 complet
+□ Fichier de configuration (seuils ajustables en YAML)
+🎓 Contexte
+Projet développé dans le cadre d'une reconversion vers la cybersécurité (SOC N1 / Administration réseau), après plusieurs années en développement web.
+
+L'objectif est de démontrer une double compétence :
+
+Dev : coder des outils propres, testables, documentés
+
+Réseau/Sécu : comprendre les protocoles, détecter les attaques, prioriser les alertes
+
+📜 Licence
+MIT — voir LICENSE.
+
+👤 Auteur
+Maxime BENE
+
+GitHub : @MaximeBENE
+
+Email : bene.max31@gmail.com

@@ -1,0 +1,31 @@
+# Environnements virtuels
+venv/
+.venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Captures (fichiers volumineux)
+captures/*.pcap
+captures/*.pcapng
+!captures/.gitkeep
+
+# Rapports générés
+capture_report.json
+
+# OS
+.DS_Store
+Thumbs.db

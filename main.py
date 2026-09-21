@@ -78,25 +78,43 @@ def analyze_file(file_path):
         return None
 
 def main():
-    parser = argparse.ArgumentParser(description="Analyseur de paquets réseau pour SOC N1")
+    parser = argparse.ArgumentParser(
+        description="Analyseur de paquets réseau pour SOC N1"
+    )
     parser.add_argument("--live", action="store_true", help="Mode capture en temps réel")
     parser.add_argument("--file", type=str, help="Chemin vers un fichier .pcap à analyser")
     parser.add_argument("--interface", type=str, help="Interface réseau (ex: eth0, wlan0)")
     parser.add_argument("--count", type=int, default=100, help="Nombre de paquets à capturer")
-    
+    parser.add_argument(
+        "--arp",
+        action="store_true",
+        help="Lance le détecteur d'ARP Spoofing en temps réel",
+    )
+
     args = parser.parse_args()
-    
+
+    # Mode ARP Spoofing
+    if args.arp:
+        from src.arp_detector import ARPSpoofDetector
+
+        detector = ARPSpoofDetector(interface=args.interface)
+        detector.start_sniffing(timeout=30)
+        detector.print_summary()
+        report = detector.get_report()
+        export_to_json(report, "arp_report.json")
+        return
+
     # Vérifie qu'au moins un mode est sélectionné
     if not args.live and not args.file:
         parser.print_help()
-        print_colored("\n⚠️  Utilise --live ou --file", "yellow")
+        print_colored("\n⚠️  Utilise --live, --file ou --arp", "yellow")
         return
-    
+
     # Exécute le mode sélectionné
     if args.live:
         analyze_live(args.interface, args.count)
     elif args.file:
         analyze_file(args.file)
-
+        
 if __name__ == "__main__":
     main()

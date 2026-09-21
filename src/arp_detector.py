@@ -105,8 +105,30 @@ class ARPSpoofDetector:
         self.arp_table[ip] = mac
 
     def _is_gateway(self, ip):
-        """Vérifie si l'IP correspond à une passerelle (heuristique)"""
-        # La plupart des passerelles finissent par .1 ou .254
+        """
+        Vérifie si l'IP est la passerelle par défaut du système.
+
+        Lit la route par défaut avec ``ip route`` et utilise une heuristique
+        simple en fallback.
+        """
+        # Essaie de détecter la vraie passerelle
+        try:
+            import subprocess
+
+            result = subprocess.run(
+                ["ip", "route", "show", "default"],
+                capture_output=True,
+                text=True,
+                timeout=2,
+            )
+            # Exemple : "default via 192.168.244.2 dev eth1 ..."
+            if "default via" in result.stdout:
+                gateway_ip = result.stdout.split("via")[1].strip().split()[0]
+                return ip == gateway_ip
+        except Exception:
+            pass
+
+        # Fallback : heuristique sur les terminaisons classiques
         return ip.endswith(".1") or ip.endswith(".254")
 
     def start_sniffing(self, timeout=30, count=None):
@@ -129,7 +151,6 @@ class ARPSpoofDetector:
                 filter="arp",
                 prn=self.analyze_packet,
                 timeout=timeout,
-                count=count,
                 store=False,
             )
         except KeyboardInterrupt:

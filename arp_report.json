@@ -1,27 +1,9 @@
 {
-  "total_arp_packets": 22,
-  "total_replies": 17,
-  "total_requests": 5,
+  "total_arp_packets": 0,
+  "total_replies": 0,
+  "total_requests": 0,
   "arp_table_size": 2,
-  "suspicious_changes": 2,
-  "alerts": [
-    "\ud83d\udea8 CRITIQUE - ARP SPOOFING potentiel : l'IP 192.168.244.2 a chang\u00e9 de MAC (00:0c:29:5a:f2:c6 \u2192 00:50:56:ed:cd:e9)",
-    "\ud83d\udea8 CRITIQUE - ARP SPOOFING potentiel : l'IP 192.168.244.2 a chang\u00e9 de MAC (00:50:56:ed:cd:e9 \u2192 00:0c:29:5a:f2:c6)"
-  ],
-  "changes_detail": {
-    "192.168.244.2": [
-      {
-        "timestamp": "14:35:07",
-        "old_mac": "00:0c:29:5a:f2:c6",
-        "new_mac": "00:50:56:ed:cd:e9",
-        "target_ip": "192.168.244.128"
-      },
-      {
-        "timestamp": "14:35:08",
-        "old_mac": "00:50:56:ed:cd:e9",
-        "new_mac": "00:0c:29:5a:f2:c6",
-        "target_ip": "192.168.244.131"
-      }
-    ]
-  }
+  "suspicious_changes": 0,
+  "alerts": [],
+  "changes_detail": {}
 }

@@ -90,6 +90,13 @@ def main():
         action="store_true",
         help="Lance le détecteur d'ARP Spoofing en temps réel",
     )
+    parser.add_argument(
+        "--timeout",
+        type=int,
+        default=30,
+        help="Durée de capture en secondes (mode --arp, défaut: 30)",
+        # exemple: sudo python main.py --arp --interface eth0 --timeout 60
+    )
 
     args = parser.parse_args()
 
@@ -98,7 +105,7 @@ def main():
         from src.arp_detector import ARPSpoofDetector
 
         detector = ARPSpoofDetector(interface=args.interface)
-        detector.start_sniffing(timeout=30)
+        detector.start_sniffing(timeout=args.timeout)
         detector.print_summary()
         report = detector.get_report()
         export_to_json(report, "arp_report.json")

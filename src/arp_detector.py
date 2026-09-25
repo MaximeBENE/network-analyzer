@@ -19,6 +19,31 @@ class ARPSpoofDetector:
     - On garde un historique des changements pour analyse
     """
 
+    def preload_arp_table(self):
+        """
+        Pré-remplit la table ARP avec les vraies MACs
+        avant de commencer la surveillance.
+        """
+        import subprocess
+
+        try:
+            result = subprocess.run(
+                ["ip", "neigh"],
+                capture_output=True,
+                text=True,
+                timeout=2,
+            )
+            for line in result.stdout.splitlines():
+                parts = line.split()
+                if len(parts) >= 5 and "lladdr" in parts:
+                    ip = parts[0]
+                    mac_idx = parts.index("lladdr") + 1
+                    mac = parts[mac_idx].lower()
+                    self.arp_table[ip] = mac
+                    print_colored(f"📌 Pré-chargé : {ip} → {mac}", "blue")
+        except Exception as e:
+            print_colored(f"⚠️  Impossible de pré-charger la table ARP : {e}", "yellow")
+
     def __init__(self, interface=None):
         self.interface = interface
         # Table ARP légitime : {ip: mac}
@@ -144,6 +169,9 @@ class ARPSpoofDetector:
             f"⏱️  Durée : {timeout}s (Ctrl+C pour arrêter)",
             "yellow",
         )
+        
+        # NOUVEAU : pré-charge la table ARP
+        self.preload_arp_table()
 
         try:
             sniff(
